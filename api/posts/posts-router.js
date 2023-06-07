@@ -41,7 +41,7 @@ router.get('/:id/comments', (req, res) => {
             } else {
                 Posts.findPostComments(id)
                 .then(comments => {                
-                        res.status(200).json(comments);
+                    res.status(200).json(comments);
                 })
                 .catch(err => {
                     res.status(500).json({message: "something went wrong"})
@@ -51,40 +51,57 @@ router.get('/:id/comments', (req, res) => {
         .catch(err => {
             res.status(404).json({message: `The post with the specified ID does not exist`})
         }) 
-
-
-
-
 })
-
 
 // POST requests
 
 router.post('/', (req, res) => {
     const { title, contents } = req.body;
     if (!title || !contents) {
-        res.status(400).json({message: "must include title and contents"})
+        res.status(400).json({ message: "must include title and contents"})
     } else {
         Posts.insert({title, contents})
-        .then(({ id }) => {
-                Posts.findById(id)
-                .then(posts => {
-                    if (!posts) {
-                        res.status.status(400).json({message: "The post with the specified ID does not exist"})
-                    } else {
-                        res.status(201).json(posts);
-                    }
-                })
-                .catch(err => {
-                    res.status(400).json({message: `The post with the specified ID does not exist`})
-                }) 
-            }
-        )
-        .catch(err => {
-            res.status(500).json({ message: 'oh no. not again.'})
-        })
+            .then(({ id }) => {
+                return Posts.findById(id);
+            })
+            .then((post) => {
+                if (!post) {
+                    res.status(400).json({message: "The post with that id doesn't exist"})
+                } else {
+                    res.status(201).json(post)
+                }
+            })
+            .catch (err => {
+                res.status(500).json({message: "Problem creating post"})
+            })
     }
-});
+})
+
+// router.post('/', (req, res) => {
+//     const { title, contents } = req.body;
+//     if (!title || !contents) {
+//         res.status(400).json({message: "must include title and contents"})
+//     } else {
+//         Posts.insert({title, contents})
+//         .then(({ id }) => {
+//                 Posts.findById(id)
+//                 .then(posts => {
+//                     if (!posts) {
+//                         res.status.status(400).json({message: "The post with the specified ID does not exist"})
+//                     } else {
+//                         res.status(201).json(posts);
+//                     }
+//                 })
+//                 .catch(err => {
+//                     res.status(400).json({message: `The post with the specified ID does not exist`})
+//                 }) 
+//             }
+//         )
+//         .catch(err => {
+//             res.status(500).json({ message: 'oh no. not again.'})
+//         })
+//     }
+// });
 
 // Delete request
 
@@ -102,7 +119,6 @@ router.delete('/:id', (req, res) => {
                 .then(() => {
                     res.status(200).json(savePost);
                 })
-
         }
     })
     .catch(err => {
@@ -129,14 +145,10 @@ router.put('/:id', (req, res) => {
                         res.status(200).json(post);
                     }
                 })
-         
         })
         .catch(err => {
         res.status(400).json({message: `The post with the specified ID does not exist`})
     })
 }})
-
-
-
 
 module.exports = router;
