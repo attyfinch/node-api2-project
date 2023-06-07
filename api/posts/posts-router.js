@@ -57,7 +57,32 @@ router.post('/', (req, res) => {
             res.status(500).json({ message: 'oh no. not again.'})
         })
     }
-})
+});
+
+// Delete request
+
+router.delete('/:id', (req, res) => {
+    const { id } = req.params;
+    
+    Posts.findById(id)
+    .then(posts => {
+        if (!posts) {
+            res.status.status(404).json({message: "The post with the specified ID does not exist"})
+        } else {
+            const savePost = posts;
+
+            Posts.remove(id)
+                .then(() => {
+                    res.status(200).json(savePost);
+                })
+
+        }
+    })
+    .catch(err => {
+        res.status(404).json({message: `The post with the specified ID does not exist`})
+    }) 
+    })
+
 
 
 
